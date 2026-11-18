@@ -19,7 +19,7 @@ export default function Footer() {
       </div>
       <div className="f-cols">
         <div><h4>Explore</h4>{LINKS.map(([t, h]) => <Link key={h} href={hrefFor(h)} onClick={h.startsWith("#") ? (e) => go(e, h) : undefined}>{t}</Link>)}</div>
-        <div><h4>Contact</h4><a href="mailto:hello@example.com">hello@example.com</a><span>Rwanda</span></div>
+        <div><h4>Contact</h4><a href="mailto:gorilasdemontana@gmail.com">gorilasdemontana@gmail.com</a><span>Rwanda</span></div>
       </div>
       <div className="mega disp" aria-hidden="true">Gorilas de Montaña</div>
       <div className="f-bottom">

@@ -1,109 +1,99 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { TRIPS, MORE } from "../lib/data";
-import { openBooking } from "../lib/book";
+import { TRIP_PLAN } from "../lib/data";
 
-const EASE = "cubic-bezier(.7,0,.2,1)";
-const N = TRIPS.length;
+const N = TRIP_PLAN.length;
 
 export default function Trips() {
-  const sec = useRef(null), row = useRef(null), ov = useRef(null), ct = useRef(null), rect = useRef(null);
-  const [open, setOpen] = useState(null);
-  const [lit, setLit] = useState(0);
+  const section = useRef(null);
+  const row = useRef(null);
 
-  // pinned: each scroll step zooms one card in, then out while the next zooms in
   useEffect(() => {
-    let t = false;
-    const f = () => {
-      t = false;
-      const r = sec.current.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
-      const x = p * (N - 1);
-      const kids = [...row.current.children];
-      const step = kids[1].offsetLeft - kids[0].offsetLeft;
-      const mob = innerWidth < 700;
-      const S = Math.max(0.6, Math.min((innerHeight * 0.74) / kids[0].offsetHeight, (innerWidth * (mob ? 0.84 : 0.4)) / kids[0].offsetWidth) - 1);
-      row.current.style.transform = `translateX(${-(x - (N - 1) / 2) * step}px)`;
-      kids.forEach((c, i) => {
-        const b = Math.max(0, 1 - Math.abs(x - i)), e = b * b * (3 - 2 * b);
-        c.style.transform = `scale(${1 + S * e})`;
-        c.style.zIndex = Math.round(e * 10);
-        c.style.setProperty("--a", e.toFixed(3));
+    let frame = null;
+    const update = () => {
+      frame = null;
+      if (!section.current || !row.current) return;
+      const bounds = section.current.getBoundingClientRect();
+      const progress = Math.min(1, Math.max(0, -bounds.top / Math.max(1, bounds.height - innerHeight)));
+      const position = progress * (N - 1);
+      const cards = [...row.current.children];
+      if (cards.length < 2) return;
+      const step = cards[1].offsetLeft - cards[0].offsetLeft;
+      const mobile = innerWidth < 700;
+      const zoom = Math.max(
+        0.6,
+        Math.min(
+          (innerHeight * 0.62) / cards[0].offsetHeight,
+          (innerWidth * (mobile ? 0.84 : 0.4)) / cards[0].offsetWidth
+        ) - 1
+      );
+      row.current.style.transform = `translateX(${-(position - (N - 1) / 2) * step}px)`;
+      cards.forEach((card, index) => {
+        const distance = Math.max(0, 1 - Math.abs(position - index));
+        const emphasis = distance * distance * (3 - 2 * distance);
+        card.style.transform = `scale(${1 + zoom * emphasis})`;
+        card.style.zIndex = String(Math.round(emphasis * 10));
+        card.style.setProperty("--a", emphasis.toFixed(3));
       });
     };
-    const on = () => { if (!t) { t = true; requestAnimationFrame(f); } };
-    f(); addEventListener("scroll", on, { passive: true }); addEventListener("resize", on);
-    return () => { removeEventListener("scroll", on); removeEventListener("resize", on); };
+    const onScroll = () => {
+      if (frame === null) frame = requestAnimationFrame(update);
+    };
+    const onResize = () => onScroll();
+
+    update();
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onResize);
+    return () => {
+      removeEventListener("scroll", onScroll);
+      removeEventListener("resize", onResize);
+      if (frame !== null) cancelAnimationFrame(frame);
+    };
   }, []);
 
-  const clip = (r) => `inset(${r.top}px ${document.documentElement.clientWidth - r.right}px ${innerHeight - r.bottom}px ${r.left}px round 6px)`;
-
-  useLayoutEffect(() => {
-    if (open === null) return;
-    window.__lenis?.stop();
-    ov.current.animate([{ clipPath: clip(rect.current) }, { clipPath: "inset(0px round 0px)" }], { duration: 850, easing: EASE, fill: "both" });
-    ct.current.animate([{ opacity: 0, transform: "translateY(50px)" }, { opacity: 1, transform: "none" }], { duration: 700, delay: 350, easing: EASE, fill: "both" });
-    setLit(0);
-    return () => window.__lenis?.start();
-  }, [open]);
-
-  // closing mirrors the opening: content fades, then the page shrinks back into its card
-  const close = () => {
-    if (!ov.current) return;
-    ct.current.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(40px)" }], { duration: 350, easing: EASE, fill: "both" });
-    const a = ov.current.animate([{ clipPath: "inset(0px round 0px)" }, { clipPath: clip(rect.current) }], { duration: 750, delay: 150, easing: EASE, fill: "both" });
-    a.onfinish = () => setOpen(null);
+  const showDestination = (day, event) => {
+    window.dispatchEvent(new CustomEvent("destination-open", {
+      detail: {
+        destinationId: day.destinationId,
+        day,
+        origin: event.currentTarget.getBoundingClientRect(),
+      },
+    }));
   };
-
-  useEffect(() => {
-    const k = (e) => e.key === "Escape" && open !== null && close();
-    addEventListener("keydown", k);
-    return () => removeEventListener("keydown", k);
-  });
-
-  const onScroll = (e) => {
-    const el = e.currentTarget.querySelector(".d-text").getBoundingClientRect();
-    setLit(Math.min(1, Math.max(0, (innerHeight * 0.85 - el.top) / (el.height + innerHeight * 0.2))));
-  };
-
-  const trip = open !== null ? TRIPS[open] : null;
-  const words = trip ? (trip.t + MORE).split(" ") : [];
 
   return (
-    <section id="trips" className="trips" ref={sec} style={{ height: `${100 + (N - 1) * 85}vh` }}>
+    <section id="trips" className="trips" ref={section} style={{ height: `${100 + (N - 1) * 78}vh` }}>
       <div className="stage">
-        <div className="t-head"><h2 className="disp">Choose your trip</h2><p> </p></div>
+        <div className="t-head trip-plan-head">
+          <p className="trip-plan-eyebrow">Kigali · Akagera · Volcanoes · Lake Kivu · Kigali</p>
+          <h2 className="disp">TRIP PLAN</h2>
+          <p className="trip-plan-title">6-Day Rwanda Primate, Wildlife &amp; Cultural Discovery</p>
+          <p className="trip-plan-market">Mid-range to Luxury <span>·</span> Couples &amp; Small Groups</p>
+          <p className="trip-plan-hint"> </p>
+        </div>
         <div className="rowwrap">
-          <div className="row" ref={row}>
-            {TRIPS.map((t, i) => (
-              <button key={t.n} className="card" aria-label={`Open ${t.n}`}
-                onClick={(e) => { rect.current = e.currentTarget.getBoundingClientRect(); setOpen(i); }}>
-                <Image src={t.img} alt="" fill sizes="45vw" unoptimized />
-                <span className="cap"><b className="disp">{t.n}</b><small>{t.f[0][1]} · {t.f[1][1]}</small></span>
+          <div className="row trip-plan-row" ref={row}>
+            {TRIP_PLAN.map((item) => (
+              <button
+                key={item.day}
+                className="card day-card"
+                type="button"
+                aria-label={`${item.day}: ${item.title}. Explore ${item.location}`}
+                onClick={(event) => showDestination(item, event)}
+              >
+                <Image src={item.image} alt="" fill sizes="45vw" unoptimized />
+                <span className="day-number">{item.day}</span>
+                <span className="cap">
+                  <b className="disp">{item.title}</b>
+                  <small>{item.location}</small>
+                  <small className="day-discover">Explore destination ↗</small>
+                </span>
               </button>
             ))}
           </div>
         </div>
       </div>
-
-      {trip && (
-        <div className="detail" ref={ov} data-lenis-prevent role="dialog" aria-modal="true" aria-label={trip.n} onScroll={onScroll}>
-          <button className="x" onClick={close} aria-label="Close trip">✕</button>
-          <div ref={ct}>
-            <div className="banner"><Image src={trip.img} alt={trip.n} fill sizes="100vw" priority unoptimized /></div>
-            <div className="d-body">
-              <span className="d-label">About</span>
-              <div>
-                <h3 className="disp">{trip.n}</h3>
-                <p className="d-text">{words.map((w, i) => <span key={i} className={i < Math.round(lit * words.length) ? "on" : ""}>{w} </span>)}</p>
-                <div className="facts">{trip.f.map(([a, b]) => <div key={a}>{a}<b>{b}</b></div>)}</div>
-                <button className="btn dark" onClick={() => openBooking()}>Book this trip</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { go } from "../lib/go";
 import { openBooking } from "../lib/book";
@@ -26,11 +27,13 @@ export default function Nav() {
   return (
     <>
       <header className={`nav${sc ? " sc" : ""}`}>
-        <Link href={hrefFor("#home")} className="logo" onClick={(e) => nav(e, "#home")}>Gorilas de Montaña</Link>
+        <Link href={hrefFor("#home")} className="logo" aria-label="Gorilas de Montaña home" onClick={(e) => nav(e, "#home")}>
+          <Image className="logo-image" src="/images/logo-white.png" alt="Gorilas de Montaña" width={578} height={422} priority />
+        </Link>
         <nav className="links" aria-label="Main">
           {LINKS.map(([t, h]) => <Link key={h} href={hrefFor(h)} onClick={(e) => nav(e, h)}>{t}</Link>)}
         </nav>
-        <button className="btn" onClick={book}>Book a trip <Arrow /></button>
+        <button className="btn nav-book" onClick={book}>Book a trip <Arrow /></button>
         <button className={`burger${open ? " on" : ""}`} aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}><i /><i /></button>
       </header>
       <div className={`panel${open ? " on" : ""}`}>

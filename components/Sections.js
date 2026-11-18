@@ -1,6 +1,6 @@
 import { FAQ } from "../lib/data";
 
-const STATS = [["4", "national parks to explore"], ["1 hr", "with each gorilla family"], ["8", "visitors per gorilla group"]];
+const STATS = [["6", "national parks to explore"], ["Endless", "fun with each gorilla family"], ["10+", "visitors per gorilla group"]];
 const FEATS = [
   ["Local guides", "Guides who grew up near the parks and know the trails, the wildlife and the stories behind them."],
   ["Small groups", "Quiet trips with few people, so gorilla visits stay calm for the animals and for you."],
