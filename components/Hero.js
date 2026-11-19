@@ -3,36 +3,55 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { go } from "../lib/go";
 
+let tornPath = "M0 90 V40";
+for (let i = 1; i <= 60; i++) tornPath += ` L${(i * 26.7).toFixed(0)} ${(10 + (Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1) * 45).toFixed(0)}`;
+tornPath += " V90Z";
+
 export default function Hero() {
-  const ref = useRef(null);
+  const title = useRef(null);
+
   useEffect(() => {
+    const hero = title.current?.closest(".hero");
+    if (!hero || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     let frame = null;
-    const f = () => {
+    const update = () => {
       frame = null;
-      if (!ref.current) return;
-      ref.current.style.setProperty("--p", Math.min(1, scrollY / innerHeight));
+      if (!title.current) return;
+      const progress = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / hero.offsetHeight));
+      const offset = -progress * Math.min(window.innerHeight * 0.14, 110);
+      title.current.style.setProperty("--title-scroll-offset", `${offset}px`);
     };
-    const on = () => { if (frame === null) frame = requestAnimationFrame(f); };
-    addEventListener("scroll", on, { passive: true });
+    const onScroll = () => {
+      if (frame === null) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      removeEventListener("scroll", on);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       if (frame !== null) cancelAnimationFrame(frame);
     };
   }, []);
+
   return (
-    <section id="home" className="hero" ref={ref}>
-      {/* one stage keeps photo, title and cutout aligned on every screen */}
+    <section id="home" className="hero">
       <div className="hstage">
-        <Image className="hbg" src="/images/hero-bg.jpg" alt="" fill priority sizes="100vw" />
+        <Image className="hbg" src="/images/Kalisimbi.jpg" alt="" fill priority quality={90} sizes="100vw" />
         <div className="title-layer">
-          <h1 className="hero-title disp" aria-label="Gorilas de Montaña"><span>Gorilas</span> <span>de Montaña</span></h1>
+          <h1 ref={title} className="hero-title disp" aria-label="Gorilas de Montaña"><span>Gorilas</span> <span>de Montaña</span></h1>
         </div>
-        <Image className="hfg" src="/images/hero-fg.webp" alt="A snow-covered mountain lit by the last light of the day" fill priority sizes="100vw" />
+        <Image className="hfg" src="/images/Kalisimbi-removed.png" alt="" fill priority quality={90} sizes="100vw" />
       </div>
       <div className="hero-copy">
         <p>Walk the volcano slopes of Rwanda and spend an hour with a mountain gorilla family.</p>
         <a href="#trips" className="btn" onClick={(e) => go(e, "#trips")}>See the trips</a>
       </div>
+      <svg className="hero-torn" viewBox="0 0 1600 90" preserveAspectRatio="none" aria-hidden="true">
+        <path d={tornPath} fill="#46563b" />
+      </svg>
     </section>
   );
 }

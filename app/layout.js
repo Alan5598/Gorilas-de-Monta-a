@@ -2,6 +2,7 @@ import { Inter, Anton, Playfair_Display } from "next/font/google";
 import SmoothScroll from "../components/SmoothScroll";
 import Nav from "../components/Nav";
 import Booking from "../components/Booking";
+import FloatingSocial from "../components/FloatingSocial";
 import "./globals.css";
 
 const body = Inter({ subsets: ["latin"], variable: "--f-body" });
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
         <SmoothScroll />
         <Nav />
         <Booking />
+        <FloatingSocial />
         {children}
       </body>
     </html>
