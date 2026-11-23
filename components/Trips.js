@@ -66,7 +66,6 @@ export default function Trips() {
     <section id="trips" className="trips" ref={section} style={{ height: `${100 + (N - 1) * 78}vh` }}>
       <div className="stage">
         <div className="t-head trip-plan-head">
-          <p className="trip-plan-eyebrow">Kigali · Akagera · Volcanoes · Lake Kivu · Kigali</p>
           <h2 className="disp">TRIP PLAN</h2>
           <p className="trip-plan-title">6-Day Rwanda Primate, Wildlife &amp; Cultural Discovery</p>
           <p className="trip-plan-market">Mid-range to Luxury <span>·</span> Couples &amp; Small Groups</p>

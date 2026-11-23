@@ -40,7 +40,6 @@ export default function Gallery({ preview = false }) {
       <div className="gallery-shell">
         <div className="gallery-heading">
           <div>
-            <p className="gallery-eyebrow">{preview ? "A look around Rwanda" : "The album"}</p>
             <h1 className="disp">{preview ? "Moments worth keeping" : "Rwanda, in moments"}</h1>
             <p className="gallery-intro">
               {preview

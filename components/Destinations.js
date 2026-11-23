@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { DEST } from "../lib/data";
 import { openBooking } from "../lib/book";
+import { CloseIcon } from "./Icons";
 
 const EASE = "cubic-bezier(.7,0,.2,1)";
 
@@ -162,7 +163,9 @@ export default function Destinations() {
           aria-label={destination.n}
           onClick={(event) => event.target === event.currentTarget && close()}
         >
-          <button className="x" onClick={close} aria-label="Close destination details">✕</button>
+          <button className="x" onClick={close} aria-label="Close destination details">
+            <CloseIcon size={20} />
+          </button>
           <div ref={content}>
             <div className="banner destination-banner">
               <Image src={destination.img} alt={destination.n} fill sizes="100vw" priority unoptimized />

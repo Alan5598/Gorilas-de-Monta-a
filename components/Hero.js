@@ -41,9 +41,21 @@ export default function Hero() {
       <div className="hstage">
         <Image className="hbg" src="/images/Kalisimbi.jpg" alt="" fill priority quality={90} sizes="100vw" />
         <div className="title-layer">
-          <h1 ref={title} className="hero-title disp" aria-label="Gorilas de Montaña"><span>Gorilas</span> <span>de Montaña</span></h1>
+          <h1 ref={title} className="hero-title" aria-label="Gorilas de Montaña">
+            <svg viewBox="0 0 1200 220" role="presentation" aria-hidden="true">
+              <text
+                x="50%"
+                y="80%"
+                textAnchor="middle"
+                textLength="780"
+                lengthAdjust="spacingAndGlyphs"
+              >
+                GORILAS DE MONTAÑA
+              </text>
+            </svg>
+          </h1>
         </div>
-        <Image className="hfg" src="/images/Kalisimbi-removed.png" alt="" fill priority quality={90} sizes="100vw" />
+        <Image className="hfg" src="/images/Kalisimbi-remove.png" alt="" fill priority quality={90} sizes="100vw" />
       </div>
       <div className="hero-copy">
         <p>Walk the volcano slopes of Rwanda and spend an hour with a mountain gorilla family.</p>
