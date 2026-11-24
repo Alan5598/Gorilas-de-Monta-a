@@ -41,11 +41,16 @@ export async function POST(request) {
     const date = new Intl.DateTimeFormat("en-GB", { weekday: "long", year: "numeric", month: "long", day: "2-digit" }).format(now);
     const iconUrl = `${publicOrigin(request)}/images/apple-message.png`;
     const resend = new Resend(process.env.RESEND_API_KEY);
-    await Promise.all([
+    const [adminResult, customerResult] = await Promise.all([
       resend.emails.send({ from: FROM_EMAIL, to: [ADMIN_EMAIL], subject: `New Trip Request from ${name} — ${packageLabel}`, html: adminEmailHtml({ name, email, travelDate, groupSize, message, locations, packageLabel }) }),
       resend.emails.send({ from: FROM_EMAIL, to: [email], subject: "Booking Received — Gorilas de Montaña", html: customerEmailHtml({ name, time, date, iconUrl }) }),
     ]);
-    return Response.json({ success: true });
+    const sendError = adminResult.error || customerResult.error;
+    if (sendError) {
+      console.error("Resend rejected email:", sendError);
+      return Response.json({ error: sendError.message || "Email provider rejected the request" }, { status: 502 });
+    }
+    return Response.json({ success: true, emailIds: [adminResult.data?.id, customerResult.data?.id] });
   } catch (error) {
     console.error("Resend error:", error);
     return Response.json({ error: "Failed to send email" }, { status: 500 });
