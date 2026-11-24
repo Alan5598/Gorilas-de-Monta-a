@@ -55,7 +55,6 @@ export default function Hero() {
             </svg>
           </h1>
         </div>
-        <Image className="hfg" src="/images/Kalisimbi-remove.png" alt="" fill priority quality={90} sizes="100vw" />
       </div>
       <div className="hero-copy">
         <p>Walk the volcano slopes of Rwanda and spend an hour with a mountain gorilla family.</p>

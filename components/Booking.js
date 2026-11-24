@@ -6,11 +6,6 @@ import Arrow from "./Arrow";
 
 const TRIP_PLACES = PLACES.filter((place) => place !== "Not sure yet");
 
-// ─── FormSubmit.co AJAX endpoint (admin email only) ──────────────────────────
-// Using /ajax/ so the page doesn't redirect after submit.
-// Swap the email to gorilasdemontana@gmail.com when going to production.
-const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/nziza031@gmail.com";
-
 export default function Booking() {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
@@ -62,29 +57,24 @@ export default function Booking() {
     const packageLabel =
       mode === "full" ? "Full Rwanda Discovery Package" : "Customized Trip";
 
-    // ── FormSubmit payload (admin notification only) ──────────────────────────
     const payload = {
       name,
-      email:          userEmail,
-      _subject:       `New Trip Request from ${name} — ${packageLabel}`,
-      _captcha:       "false",
-      _template:      "table",
-      Package:        packageLabel,
-      "Trip Locations": locations.join(", "),
-      "Travel Date":  travelDate,
-      "Group Size":   groupSize,
-      Message:        message,
+      email: userEmail,
+      travelDate,
+      groupSize,
+      message: message || "Not provided",
+      locations: locations.join(", "),
+      packageLabel,
     };
 
     setStatus("sending");
     setSentName(name);
 
     try {
-      const res = await fetch(FORMSUBMIT_ENDPOINT, {
+      const res = await fetch("/api/send-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
         body: JSON.stringify(payload),
       });
