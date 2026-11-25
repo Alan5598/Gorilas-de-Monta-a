@@ -7,9 +7,9 @@ import { useI18n } from "./I18n";
 const SLIDES = [
   { src: "/images/Kalisimbi.jpg", alt: "Mount Karisimbi above the clouds" },
   { src: "/images/baby-gorila.jpg", alt: "A baby mountain gorilla" },
-  { src: "/images/nyungwe.jpg", alt: "Nyungwe rainforest" },
+  { src: "/images/gorilla-2.jpg", alt: "Nyungwe rainforest" },
   { src: "/images/elephant.jpg", alt: "An elephant in Akagera National Park" },
-  { src: "/images/volcano.jpg", alt: "A volcano in the Virunga mountains" },
+  { src: "/images/lion-1.jpg", alt: "A lion laying down freely in savannah" },
 ];
 const DELAY = 5000;
 
