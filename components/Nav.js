@@ -70,7 +70,7 @@ export default function Nav() {
     <>
       <header className="nav sc" ref={bar}>
         <Link href={hrefFor("#home")} className="logo" aria-label="Gorilas de Montaña" onClick={(e) => { setOpen(false); setMega(null); setMobileSub(null); nav(e, "#home"); }}>
-          <img className="logo-image" src="/images/Logo-white.png" alt="Gorilas de Montaña" width="auto" height="auto" />
+          <img className="logo-image" src="/images/whitelogo.png" alt="Gorilas de Montaña" width="auto" height="auto" />
         </Link>
 
         <nav className="links" aria-label="Main">
