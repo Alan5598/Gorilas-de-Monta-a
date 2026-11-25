@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { GALLERY_IMAGES } from "../lib/gallery";
+import { useI18n } from "./I18n";
 
 const PREVIEW_COUNT = 6;
 
 export default function Gallery({ preview = false }) {
+  const { t } = useI18n();
   const [active, setActive] = useState(null);
   const images = preview ? GALLERY_IMAGES.slice(0, PREVIEW_COUNT) : GALLERY_IMAGES;
   const lightboxOpen = active !== null;
@@ -40,17 +42,15 @@ export default function Gallery({ preview = false }) {
       <div className="gallery-shell">
         <div className="gallery-heading">
           <div>
-            <h1 className="disp">{preview ? "Moments worth keeping" : "Rwanda, in moments"}</h1>
+            <h1 className="disp">{preview ? t("g.h1") : t("g.h2")}</h1>
             <p className="gallery-intro">
-              {preview
-                ? "A few glimpses of the trails, wildlife and quiet places waiting to be discovered."
-                : "Explore the landscapes, trails and places that make every journey through Rwanda memorable."}
+              {preview ? t("g.p1") : t("g.p2")}
             </p>
           </div>
           {preview ? (
-            <Link className="btn dark" href="/gallery">View full album <span aria-hidden="true">↗</span></Link>
+            <Link className="btn dark" href="/gallery">{t("g.album")} <span aria-hidden="true">↗</span></Link>
           ) : (
-            <Link className="gallery-back" href="/">← Back to the journey</Link>
+            <Link className="gallery-back" href="/">{t("g.back")}</Link>
           )}
         </div>
 

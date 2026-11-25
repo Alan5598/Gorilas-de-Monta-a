@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useI18n } from "./I18n";
 import { DEST } from "../lib/data";
 import { openBooking } from "../lib/book";
 import { CloseIcon } from "./Icons";
@@ -8,6 +10,7 @@ import { CloseIcon } from "./Icons";
 const EASE = "cubic-bezier(.7,0,.2,1)";
 
 export default function Destinations() {
+  const { t } = useI18n();
   const sec = useRef(null);
   const track = useRef(null);
   const overlay = useRef(null);
@@ -126,17 +129,16 @@ export default function Destinations() {
     <section id="destinations" className="dests" ref={sec}>
       <div className="dstage">
         <div className="d-head">
-          <h2 className="disp">Our top destinations</h2>
-          <p>Five places that show Rwanda’s wildlife, landscapes and history. Keep scrolling to travel through them.</p>
+          <h2 className="disp">{t("dest.title")}</h2>
+          <p>{t("dest.sub")}</p>
         </div>
         <div className="dtrack" ref={track}>
-          {DEST.map((item, index) => (
-            <button
+          {DEST.map((item) => (
+            <Link
               className="d-card"
               key={item.id}
-              type="button"
-              aria-label={`Learn more about ${item.n}`}
-              onClick={(event) => open(index, event.currentTarget.getBoundingClientRect())}
+              href={`/destinations/${item.id}`}
+              aria-label={`${t("dest.learn")}: ${t(`d.${item.id}.n`, item.n)}`}
             >
               <span className="d-frame">
                 <span className="d-img">
@@ -144,11 +146,11 @@ export default function Destinations() {
                 </span>
               </span>
               <span className="d-info">
-                <span className="d-title disp">{item.n}</span>
-                <span className="d-summary">{item.tag}</span>
-                <span className="link" aria-hidden="true">Learn more <span>↗</span></span>
+                <span className="d-title disp">{t(`d.${item.id}.n`, item.n)}</span>
+                <span className="d-summary">{t(`d.${item.id}.tag`, item.tag)}</span>
+                <span className="link" aria-hidden="true">{t("dest.learn")} <span>↗</span></span>
               </span>
-            </button>
+            </Link>
           ))}
         </div>
       </div>
@@ -171,15 +173,15 @@ export default function Destinations() {
               <Image src={destination.img} alt={destination.n} fill sizes="100vw" priority unoptimized />
               <div className="destination-banner-title">
                 <span>{destination.id.replace("-", " ")}</span>
-                <h2 className="disp">{destination.n}</h2>
+                <h2 className="disp">{t(`d.${destination.id}.n`, destination.n)}</h2>
               </div>
             </div>
             <div className="d-body destination-body">
-              <span className="d-label">Discover</span>
+              <span className="d-label">{t("d.discover")}</span>
               <div>
-                <h3 className="disp destination-subhead">About {destination.n}</h3>
+                <h3 className="disp destination-subhead">{t("d.about")} {t(`d.${destination.id}.n`, destination.n)}</h3>
                 <p className="destination-intro">{destination.intro}</p>
-                <h3 className="disp destination-subhead">What to experience</h3>
+                <h3 className="disp destination-subhead">{t("d.exp")}</h3>
                 <div className="destination-experiences">
                   {destination.experiences.map((experience) => (
                     <article className="destination-experience" key={experience.title}>
@@ -190,25 +192,28 @@ export default function Destinations() {
                 </div>
                 {selectedDay && (
                   <div className="destination-day">
-                    <p className="gallery-eyebrow">From your itinerary · {selectedDay.day}</p>
+                    <p className="gallery-eyebrow">{t("d.itin")} · {selectedDay.day}</p>
                     <h3 className="disp">{selectedDay.title}</h3>
                     <ul className="destination-activities">
                       {selectedDay.activities.map((activity) => <li key={activity}>{activity}</li>)}
                     </ul>
                     <div className="facts">
-                      <div>Overnight<b>{selectedDay.overnight}</b></div>
-                      <div>Meal plan<b>{selectedDay.board}</b></div>
+                      <div>{t("d.overnight")}<b>{selectedDay.overnight}</b></div>
+                      <div>{t("d.meal")}<b>{selectedDay.board}</b></div>
                     </div>
                   </div>
                 )}
                 {destination.note && <p className="destination-note">{destination.note}</p>}
                 <div className="destination-sources">
-                  <h4>Further information</h4>
+                  <h4>{t("d.further")}</h4>
                   {destination.sources.map((source) => (
                     <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer">{source.label} ↗</a>
                   ))}
                 </div>
-                <button className="btn dark" onClick={() => openBooking(destination.place)}>Plan this visit</button>
+                <div className="dp-actions">
+                  <button className="btn dark" onClick={() => openBooking(destination.place)}>{t("d.plan")}</button>
+                  <Link className="btn btn-line" href={`/destinations/${destination.id}`}>{t("d.page")}</Link>
+                </div>
               </div>
             </div>
           </div>

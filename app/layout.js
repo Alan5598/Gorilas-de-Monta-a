@@ -1,4 +1,5 @@
 import { Inter, Anton, Bebas_Neue, Playfair_Display } from "next/font/google";
+import { I18nProvider } from "../components/I18n";
 import SmoothScroll from "../components/SmoothScroll";
 import Nav from "../components/Nav";
 import Booking from "../components/Booking";
@@ -20,11 +21,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${body.variable} ${display.variable} ${tall.variable} ${logo.variable}`}>
+        <I18nProvider>
         <SmoothScroll />
         <Nav />
         <Booking />
         <FloatingSocial />
         {children}
+        </I18nProvider>
       </body>
     </html>
   );

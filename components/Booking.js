@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { PLACES } from "../lib/data";
 import { GorillaIcon, AlertIcon, CloseIcon } from "./Icons";
 import Arrow from "./Arrow";
+import { useI18n } from "./I18n";
 
 const TRIP_PLACES = PLACES.filter((place) => place !== "Not sure yet");
 
 export default function Booking() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
   const [sentName, setSentName] = useState("");
@@ -113,14 +115,9 @@ export default function Booking() {
             <div className="bk-done-icon success" aria-hidden="true">
               <GorillaIcon size={46} />
             </div>
-            <h2 className="disp">Thank you, {sentName}!</h2>
-            <p>
-              Your trip request has been sent to our team. We&apos;ll be in touch
-              within <strong>24–48 hours</strong>.
-            </p>
-            <button className="btn dark" onClick={() => setOpen(false)}>
-              Close
-            </button>
+            <h2 className="disp">{t("bk.thanks")} {sentName}!</h2>
+            <p>{t("bk.sent")} <strong>{t("bk.hours")}</strong>.</p>
+            <button className="btn dark" onClick={() => setOpen(false)}>{t("bk.close")}</button>
           </div>
         )}
 
@@ -130,40 +127,27 @@ export default function Booking() {
             <div className="bk-done-icon error" aria-hidden="true">
               <AlertIcon size={42} />
             </div>
-            <h2 className="disp">Something went wrong</h2>
-            <p>
-              We couldn&apos;t send your message. Please email us directly at{" "}
-              <a href="mailto:gorilasdemontana@gmail.com">
-                gorilasdemontana@gmail.com
-              </a>{" "}
-              or try again.
-            </p>
+            <h2 className="disp">{t("bk.err")}</h2>
+            <p>{t("bk.errp")} <a href="mailto:gorilasdemontana@gmail.com">gorilasdemontana@gmail.com</a> {t("bk.or")}</p>
             <button className="btn dark" onClick={() => setStatus("idle")}>
-              Try again
-            </button>
+              {t("bk.retry")}</button>
           </div>
         )}
 
         {/* ── FORM ─────────────────────────────────────────────────── */}
         {(status === "idle" || status === "sending") && (
           <form onSubmit={submit}>
-            <h2 className="disp">Book a trip</h2>
-            <p className="bk-sub">
-              Choose the complete package or tailor the destinations to your trip.
-            </p>
+            <h2 className="disp">{t("bk.title")}</h2>
+            <p className="bk-sub">{t("bk.sub")}</p>
 
-            <label>
-              Full name
-              <input name="name" required autoComplete="name" autoFocus />
+            <label>{t("bk.name")}<input name="name" required autoComplete="name" autoFocus />
             </label>
 
-            <label>
-              Email
-              <input name="email" type="email" required autoComplete="email" />
+            <label>{t("bk.email")}<input name="email" type="email" required autoComplete="email" />
             </label>
 
             <fieldset className="bk-packages">
-              <legend>Choose your package</legend>
+              <legend>{t("bk.pkg")}</legend>
               <label className="bk-choice">
                 <input
                   type="radio"
@@ -176,8 +160,8 @@ export default function Booking() {
                   }}
                 />
                 <span>
-                  <b>Full Rwanda discovery package</b>
-                  <small>Include every available destination and experience.</small>
+                  <b>{t("bk.full")}</b>
+                  <small>{t("bk.fullsub")}</small>
                 </span>
               </label>
               <label className="bk-choice">
@@ -189,15 +173,15 @@ export default function Booking() {
                   onChange={() => setMode("custom")}
                 />
                 <span>
-                  <b>Customize my trip</b>
-                  <small>Select the locations you would like to visit.</small>
+                  <b>{t("bk.custom")}</b>
+                  <small>{t("bk.customsub")}</small>
                 </span>
               </label>
             </fieldset>
 
             <fieldset className="bk-locations" disabled={mode === "full"}>
               <legend>
-                Trip locations <span>({selectedPlaces.length} selected)</span>
+                {t("bk.locs")} <span>({selectedPlaces.length} {t("bk.selected")})</span>
               </legend>
               {TRIP_PLACES.map((place) => (
                 <label className="bk-location" key={place}>
@@ -212,22 +196,16 @@ export default function Booking() {
             </fieldset>
 
             <div className="bk-two">
-              <label>
-                Travel date
-                <input name="date" type="date" min={min} required />
+              <label>{t("bk.date")}<input name="date" type="date" min={min} required />
               </label>
-              <label>
-                Group size
-                <input name="groupSize" type="number" min="1" defaultValue="2" required />
+              <label>{t("bk.group")}<input name="groupSize" type="number" min="1" defaultValue="2" required />
               </label>
             </div>
 
-            <label>
-              Message
-              <textarea
+            <label>{t("bk.msg")}<textarea
                 name="message"
                 rows="3"
-                placeholder="Interests, accessibility needs, or anything else we should know"
+                placeholder={t("bk.ph")}
               />
             </label>
 
@@ -240,10 +218,10 @@ export default function Booking() {
               }
             >
               {status === "sending" ? (
-                "Sending…"
+                t("bk.sending")
               ) : (
                 <>
-                  Send request <Arrow />
+                  {t("bk.send")} <Arrow />
                 </>
               )}
             </button>

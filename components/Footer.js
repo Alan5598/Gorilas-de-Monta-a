@@ -4,27 +4,36 @@ import { usePathname } from "next/navigation";
 import { go } from "../lib/go";
 import { openBooking } from "../lib/book";
 import Arrow from "./Arrow";
+import { useI18n } from "./I18n";
 
-const LINKS = [["Home", "#home"], ["About us", "#about"], ["Destinations", "#destinations"], ["Trips", "#trips"], ["Gallery", "/gallery"], ["FAQ", "#faq"]];
+const LINKS = [["nav.home", "#home"], ["nav.about", "#about"], ["nav.destinations", "#destinations"], ["nav.trips", "#trips"], ["nav.gallery", "/gallery"], ["nav.faq", "#faq"]];
 
 export default function Footer() {
   const pathname = usePathname();
-  const hrefFor = (href) => href.startsWith("#") && pathname !== "/" ? `/${href}` : href;
+  const { t } = useI18n();
+  const hrefFor = (href) => (href.startsWith("#") && pathname !== "/" ? `/${href}` : href);
 
   return (
     <footer id="contact" className="footer">
       <div className="f-cta">
-        <h2 className="disp">Ready to meet<br />the gorillas?</h2>
-        <button className="btn" onClick={() => openBooking()}>Book a trip <Arrow /></button>
+        <h2 className="disp">{t("f.ready1")}<br />{t("f.ready2")}</h2>
+        <button className="btn" onClick={() => openBooking()}>{t("nav.book")} <Arrow /></button>
       </div>
       <div className="f-cols">
-        <div><h4>Explore</h4>{LINKS.map(([t, h]) => <Link key={h} href={hrefFor(h)} onClick={h.startsWith("#") ? (e) => go(e, h) : undefined}>{t}</Link>)}</div>
-        <div><h4>Contact</h4><a href="mailto:gorilasdemontana@gmail.com">gorilasdemontana@gmail.com</a><span>Rwanda</span></div>
+        <div>
+          <h4>{t("f.explore")}</h4>
+          {LINKS.map(([key, h]) => <Link key={h} href={hrefFor(h)} onClick={h.startsWith("#") ? (e) => go(e, h) : undefined}>{t(key)}</Link>)}
+        </div>
+        <div>
+          <h4>{t("f.contact")}</h4>
+          <a href="mailto:gorilasdemontana@gmail.com">gorilasdemontana@gmail.com</a>
+          <span>Rwanda</span>
+        </div>
       </div>
       <div className="mega disp" aria-hidden="true">Gorilas de Montaña</div>
       <div className="f-bottom">
-        <span>©2026 Gorilas de Montaña. All rights reserved</span>
-        <Link href={hrefFor("#home")} onClick={(e) => go(e, "#home")}>Back to top</Link>
+        <span>{t("f.rights")}</span>
+        <Link href={hrefFor("#home")} onClick={(e) => go(e, "#home")}>{t("f.top")}</Link>
       </div>
     </footer>
   );

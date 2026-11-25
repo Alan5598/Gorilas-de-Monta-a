@@ -2,10 +2,12 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { TRIP_PLAN } from "../lib/data";
+import { useI18n } from "./I18n";
 
 const N = TRIP_PLAN.length;
 
 export default function Trips() {
+  const { t } = useI18n();
   const section = useRef(null);
   const row = useRef(null);
 
@@ -66,14 +68,14 @@ export default function Trips() {
     <section id="trips" className="trips" ref={section} style={{ height: `${100 + (N - 1) * 78}vh` }}>
       <div className="stage">
         <div className="t-head trip-plan-head">
-          <h2 className="disp">TRIP PLAN</h2>
-          <p className="trip-plan-title">6-Day Rwanda Primate, Wildlife &amp; Cultural Discovery</p>
-          <p className="trip-plan-market">Mid-range to Luxury <span>·</span> Couples &amp; Small Groups</p>
+          <h2 className="disp">{t("trips.title")}</h2>
+          <p className="trip-plan-title">{t("trips.sub")}</p>
+          <p className="trip-plan-market">{t("trips.market")} <span>·</span> {t("trips.who")}</p>
           <p className="trip-plan-hint"> </p>
         </div>
         <div className="rowwrap">
           <div className="row trip-plan-row" ref={row}>
-            {TRIP_PLAN.map((item) => (
+            {TRIP_PLAN.map((item, index) => (
               <button
                 key={item.day}
                 className="card day-card"
@@ -82,11 +84,11 @@ export default function Trips() {
                 onClick={(event) => showDestination(item, event)}
               >
                 <Image src={item.image} alt="" fill sizes="45vw" unoptimized />
-                <span className="day-number">{item.day}</span>
+                <span className="day-number">{t("trip.day")} {item.day.split(" ")[1]}</span>
                 <span className="cap">
-                  <b className="disp">{item.title}</b>
+                  <b className="disp">{t(`tp.${index + 1}`, item.title)}</b>
                   <small>{item.location}</small>
-                  <small className="day-discover">Explore destination ↗</small>
+                  <small className="day-discover">{t("trips.explore")} ↗</small>
                 </span>
               </button>
             ))}

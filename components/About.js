@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import { useI18n } from "./I18n";
 
 const ABOUT_IMAGES = [
   { src: "/images/about-1.png", alt: "Gorilas de Montaña company story" },
@@ -15,6 +16,7 @@ for (let i = 1; i <= 60; i++) tornPath += ` L${(i * 26.7).toFixed(0)} ${(10 + (M
 tornPath += " V90Z";
 
 export default function About() {
+  const { t } = useI18n();
   const gallery = useRef(null);
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function About() {
 
   return (
     <section id="about" className="about">
-      <h2 className="sr">About us</h2>
+      <h2 className="sr">{t("nav.about")}</h2>
       <div className="about-gallery" ref={gallery}>
         {ABOUT_IMAGES.map((image) => (
           <figure className="about-image" key={image.src}>
