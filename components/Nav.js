@@ -31,20 +31,25 @@ export default function Nav() {
   const bar = useRef(null);
   const [open, setOpen] = useState(false);
   const [mega, setMega] = useState(null);
+  const [mobileSub, setMobileSub] = useState(null);
   const [hover, setHover] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(true);
 
   // lets the mega menu and hero sit exactly below the navbar
   useEffect(() => {
     const el = bar.current;
     if (!el) return;
     const set = () => document.documentElement.style.setProperty("--nav-h", `${el.offsetHeight}px`);
+    const onResize = () => { set(); setIsDesktop(window.innerWidth > 980); };
     set();
+    onResize();
     const ro = new ResizeObserver(set);
     ro.observe(el);
-    return () => ro.disconnect();
+    window.addEventListener("resize", onResize);
+    return () => { ro.disconnect(); window.removeEventListener("resize", onResize); };
   }, []);
 
-  useEffect(() => { setMega(null); setOpen(false); }, [pathname]);
+  useEffect(() => { setMega(null); setOpen(false); setMobileSub(null); }, [pathname]);
 
   useEffect(() => {
     if (!mega) return;
@@ -54,16 +59,18 @@ export default function Nav() {
   }, [mega]);
 
   const hrefFor = (href) => (href.startsWith("#") && pathname !== "/" ? `/${href}` : href);
-  const nav = (e, href) => { setOpen(false); setMega(null); if (href.startsWith("#")) go(e, href); };
-  const book = () => { setOpen(false); setMega(null); openBooking(); };
-  const toggleMega = (type) => { setOpen(false); setHover(0); setMega(mega === type ? null : type); };
+  const nav = (e, href) => { setOpen(false); setMega(null); setMobileSub(null); if (href.startsWith("#")) go(e, href); };
+  const book = () => { setOpen(false); setMega(null); setMobileSub(null); openBooking(); };
+  const toggleMega = (type) => { setOpen(false); setHover(0); setMobileSub(null); setMega(mega === type ? null : type); };
+  const toggleMobileSub = (type) => { setMobileSub(mobileSub === type ? null : type); };
   const shown = DEST[hover] || DEST[0];
+  const shownTrip = TRIP_PLAN[hover] || TRIP_PLAN[0];
 
   return (
     <>
       <header className="nav sc" ref={bar}>
-        <Link href={hrefFor("#home")} className="logo" aria-label="Gorilas de Montaña" onClick={(e) => nav(e, "#home")}>
-          <Image className="logo-image" src="/images/Logo-white.png" alt="Gorilas de Montaña" width={3263} height={1097} priority />
+        <Link href={hrefFor("#home")} className="logo" aria-label="Gorilas de Montaña" onClick={(e) => { setOpen(false); setMega(null); setMobileSub(null); nav(e, "#home"); }}>
+          <img className="logo-image" src="/images/Logo-white.png" alt="Gorilas de Montaña" width="auto" height="auto" />
         </Link>
 
         <nav className="links" aria-label="Main">
@@ -88,12 +95,12 @@ export default function Nav() {
           <button className="btn nav-book" onClick={book}>{t("nav.book")} <Arrow /></button>
         </div>
 
-        <button className={`burger${open ? " on" : ""}`} aria-label={t("nav.menu")} aria-expanded={open} onClick={() => { setMega(null); setOpen(!open); }}>
+        <button className={`burger${open ? " on" : ""}`} aria-label={t("nav.menu")} aria-expanded={open} onClick={() => { setMega(null); setMobileSub(null); setOpen(!open); }}>
           <i /><i />
         </button>
       </header>
 
-      {mega === "destinations" && (
+      {mega === "destinations" && isDesktop && (
         <div className="vr-back" onClick={() => setMega(null)}>
           <div className="vr-panel" onClick={(e) => e.stopPropagation()}>
             <div className="vr-rail">
@@ -133,7 +140,7 @@ export default function Nav() {
         </div>
       )}
 
-      {mega === "trips" && (
+      {mega === "trips" && isDesktop && (
         <div className="vr-back" onClick={() => setMega(null)}>
           <div className="vr-panel" onClick={(e) => e.stopPropagation()}>
             <div className="vr-rail">
@@ -174,8 +181,38 @@ export default function Nav() {
       )}
 
       <div className={`panel${open ? " on" : ""}`}>
-        {LINKS.map(([key, href]) => (
-          <Link key={href} href={hrefFor(href)} onClick={(e) => nav(e, href)}>{t(key)}</Link>
+        {LINKS.map(([key, href, type]) => (
+          <div key={href} className="panel-item">
+            <button
+              className={`panel-link${type ? " has-sub" : ""}${mobileSub === type ? " active" : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (type) { toggleMobileSub(type); }
+                else { nav(e, href); setOpen(false); }
+              }}
+            >
+              {t(key)}{type && <span className="panel-chev">▾</span>}
+            </button>
+            {type && mobileSub === type && (
+              <ul className="panel-sub">
+                {type === "destinations"
+                  ? DEST.map((d) => (
+                      <li key={d.id}>
+                        <Link href={`/destinations/${d.id}`} onClick={(e) => { e.stopPropagation(); nav(e, `#/${d.id}`); setOpen(false); setMobileSub(null); }}>
+                          {t(`d.${d.id}.n`, d.n)}
+                        </Link>
+                      </li>
+                    ))
+                  : TRIP_PLAN.map((d) => (
+                      <li key={d.day}>
+                        <Link href={`/trips/${d.day.toLowerCase().replace(" ", "-")}`} onClick={(e) => { e.stopPropagation(); nav(e, `/trips/${d.day.toLowerCase().replace(" ", "-")}`); setOpen(false); setMobileSub(null); }}>
+                          {d.title}
+                        </Link>
+                      </li>
+                    ))}
+              </ul>
+            )}
+          </div>
         ))}
         <button className="btn" onClick={book}>{t("nav.book")} <Arrow /></button>
       </div>
