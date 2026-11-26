@@ -23,7 +23,7 @@ export default function LanguagePicker() {
     <div className="lp" ref={box}>
       <button type="button" className="lp-btn" aria-haspopup="listbox" aria-expanded={open}
         aria-label={`${t("nav.lang")}: ${current.label}`} onClick={() => setOpen(!open)}>
-        <Image className="lp-flag" src={`/images/${current.flag}.png`} alt="" width={22} height={22} />
+        {current.emoji ? <span className="lp-flag lp-emoji" aria-hidden="true">{current.emoji}</span> : <Image className="lp-flag" src={`/images/${current.flag}.png`} alt="" width={22} height={22} />}
         <span>{current.short}</span>
         <svg className={`lp-chev${open ? " up" : ""}`} viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>
       </button>
@@ -32,7 +32,7 @@ export default function LanguagePicker() {
           {LANGS.map((l) => (
             <li key={l.code} role="option" aria-selected={l.code === lang}>
               <button type="button" className={l.code === lang ? "on" : ""} onClick={() => { setLang(l.code); setOpen(false); }}>
-                <Image className="lp-flag" src={`/images/${l.flag}.png`} alt="" width={22} height={22} />
+                {l.emoji ? <span className="lp-flag lp-emoji" aria-hidden="true">{l.emoji}</span> : <Image className="lp-flag" src={`/images/${l.flag}.png`} alt="" width={22} height={22} />}
                 <span>{l.label}</span>
                 {l.code === lang && <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5l2.6 2.6L10 3.5" fill="none" stroke="currentColor" strokeWidth="1.8" /></svg>}
               </button>

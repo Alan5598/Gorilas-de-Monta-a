@@ -14,6 +14,7 @@ const logo = Playfair_Display({ subsets: ["latin"], style: ["italic"], variable:
 export const metadata = {
   title: "Gorilas de Montaña",
   description: "Travel to meet the mountain gorillas of Rwanda and explore the volcanoes they call home.",
+  icons: { icon: "/images/favicon.svg" },
 };
 export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 

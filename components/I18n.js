@@ -1,9 +1,10 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { LANGS, T } from "../lib/i18n";
+import { ES, LANGS, T } from "../lib/i18n";
 
 const KEY = "gdm-lang";
 const lookup = (lang, key, fallback) => {
+  if (lang === "es" && ES[key]) return ES[key];
   const i = Math.max(0, LANGS.findIndex((l) => l.code === lang));
   const v = T[key];
   return (v && (v[i] || v[0])) || fallback || key;
