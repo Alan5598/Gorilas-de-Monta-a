@@ -80,14 +80,14 @@ export default function Trips() {
                 key={item.day}
                 className="card day-card"
                 type="button"
-                aria-label={`${item.day}: ${item.title}. Explore ${item.location}`}
+                aria-label={`${t("trip.day")} ${index + 1}: ${t(`tp.${index + 1}`, item.title)}. ${t("trips.explore")} ${t(`trip.${index + 1}.location`, item.location)}`}
                 onClick={(event) => showDestination(item, event)}
               >
                 <Image src={item.image} alt="" fill sizes="45vw" unoptimized />
                 <span className="day-number">{t("trip.day")} {item.day.split(" ")[1]}</span>
                 <span className="cap">
                   <b className="disp">{t(`tp.${index + 1}`, item.title)}</b>
-                  <small>{item.location}</small>
+                  <small>{t(`trip.${index + 1}.location`, item.location)}</small>
                   <small className="day-discover">{t("trips.explore")} ↗</small>
                 </span>
               </button>

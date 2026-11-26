@@ -124,6 +124,8 @@ export default function Destinations() {
   };
 
   const destination = selected === null ? null : DEST[selected];
+  const tripIndex = selectedDay ? Number(selectedDay.day.split(" ")[1]) : null;
+  const copy = (field, fallback) => t(`destination.${destination?.id}.${field}`, fallback);
 
   return (
     <section id="destinations" className="dests" ref={sec}>
@@ -180,30 +182,30 @@ export default function Destinations() {
               <span className="d-label">{t("d.discover")}</span>
               <div>
                 <h3 className="disp destination-subhead">{t("d.about")} {t(`d.${destination.id}.n`, destination.n)}</h3>
-                <p className="destination-intro">{destination.intro}</p>
+                <p className="destination-intro">{copy("intro", destination.intro)}</p>
                 <h3 className="disp destination-subhead">{t("d.exp")}</h3>
                 <div className="destination-experiences">
-                  {destination.experiences.map((experience) => (
+                  {destination.experiences.map((experience, index) => (
                     <article className="destination-experience" key={experience.title}>
-                      <h4>{experience.title}</h4>
-                      <p>{experience.description}</p>
+                      <h4>{copy(`experience.${index + 1}.title`, experience.title)}</h4>
+                      <p>{copy(`experience.${index + 1}.description`, experience.description)}</p>
                     </article>
                   ))}
                 </div>
                 {selectedDay && (
                   <div className="destination-day">
                     <p className="gallery-eyebrow">{t("d.itin")} · {selectedDay.day}</p>
-                    <h3 className="disp">{selectedDay.title}</h3>
+                    <h3 className="disp">{t(`tp.${tripIndex}`, selectedDay.title)}</h3>
                     <ul className="destination-activities">
-                      {selectedDay.activities.map((activity) => <li key={activity}>{activity}</li>)}
+                      {selectedDay.activities.map((activity, activityIndex) => <li key={activity}>{t(`trip.${tripIndex}.activity.${activityIndex + 1}`, activity)}</li>)}
                     </ul>
                     <div className="facts">
-                      <div>{t("d.overnight")}<b>{selectedDay.overnight}</b></div>
-                      <div>{t("d.meal")}<b>{selectedDay.board}</b></div>
+                      <div>{t("d.overnight")}<b>{t(`trip.${tripIndex}.overnight`, selectedDay.overnight)}</b></div>
+                      <div>{t("d.meal")}<b>{t(`trip.${tripIndex}.board`, selectedDay.board)}</b></div>
                     </div>
                   </div>
                 )}
-                {destination.note && <p className="destination-note">{destination.note}</p>}
+                {destination.note && <p className="destination-note">{copy("note", destination.note)}</p>}
                 <div className="destination-sources">
                   <h4>{t("d.further")}</h4>
                   {destination.sources.map((source) => (

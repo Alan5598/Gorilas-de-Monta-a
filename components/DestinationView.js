@@ -17,6 +17,7 @@ export default function DestinationView({ id }) {
   const [active, setActive] = useState(null);
   const open = active !== null;
   const name = t(`d.${d.id}.n`, d.n);
+  const copy = (field, fallback) => t(`destination.${d.id}.${field}`, fallback);
   const count = d.gallery.length;
 
   useEffect(() => {
@@ -43,25 +44,25 @@ export default function DestinationView({ id }) {
 
       <div className="dp-wrap">
         <Link className="dp-back" href="/#destinations">← {t("dp.back")}</Link>
-        <p className="destination-intro">{d.intro}</p>
+        <p className="destination-intro">{copy("intro", d.intro)}</p>
 
         <section aria-label={t("dp.facts")}>
           <dl className="dp-facts">
-            {d.facts.map(([k, v]) => <div key={k}><dt>{t(`fact.${k}`)}</dt><dd>{v}</dd></div>)}
+            {d.facts.map(([k, v], index) => <div key={k}><dt>{t(`fact.${k}`)}</dt><dd>{copy(`fact.${index + 1}`, v)}</dd></div>)}
           </dl>
         </section>
 
         <section className="dp-sec">
           <h2>{t("d.exp")}</h2>
           <div className="destination-experiences">
-            {d.experiences.map((e) => (
+            {d.experiences.map((e, index) => (
               <article className="destination-experience" key={e.title}>
-                <h4>{e.title}</h4>
-                <p>{e.description}</p>
+                <h4>{copy(`experience.${index + 1}.title`, e.title)}</h4>
+                <p>{copy(`experience.${index + 1}.description`, e.description)}</p>
               </article>
             ))}
           </div>
-          {d.note && <p className="destination-note">{d.note}</p>}
+          {d.note && <p className="destination-note">{copy("note", d.note)}</p>}
         </section>
 
         <section className="dp-sec">

@@ -63,6 +63,16 @@ export default function Nav() {
   const book = () => { setOpen(false); setMega(null); setMobileSub(null); openBooking(); };
   const toggleMega = (type) => { setOpen(false); setHover(0); setMobileSub(null); setMega(mega === type ? null : type); };
   const toggleMobileSub = (type) => { setMobileSub(mobileSub === type ? null : type); };
+  const openTrip = (trip, event) => {
+    event?.preventDefault();
+    const origin = event?.currentTarget?.getBoundingClientRect();
+    setOpen(false);
+    setMega(null);
+    setMobileSub(null);
+    window.dispatchEvent(new CustomEvent("destination-open", {
+      detail: { destinationId: trip.destinationId, day: trip, origin },
+    }));
+  };
   const shown = DEST[hover] || DEST[0];
   const shownTrip = TRIP_PLAN[hover] || TRIP_PLAN[0];
 
@@ -151,30 +161,30 @@ export default function Nav() {
             <ul className="vr-list">
               {TRIP_PLAN.map((d, i) => (
                 <li key={d.day}>
-                  <Link
-                    href={`/trips/${d.day.toLowerCase().replace(" ", "-")}`}
+                  <button
+                    type="button"
                     className={i === hover ? "on" : ""}
                     onMouseEnter={() => setHover(i)}
                     onFocus={() => setHover(i)}
-                    onClick={() => setMega(null)}
+                    onClick={(event) => openTrip(d, event)}
                   >
-                    {t(`t.${i}.title`, d.title)}
+                    {t(`tp.${i + 1}`, d.title)}
                     <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>
             <div className="vr-prev">
               <div className="vr-copy" key={shown.id}>
-                <h3>{shown.title}</h3>
+                <h3>{t(`tp.${hover + 1}`, shown.title)}</h3>
               </div>
               <div className="vr-img">
                 {TRIP_PLAN.map((d, i) => (
                   <Image key={i} className={i === hover ? "show" : ""} src={d.image} alt="" fill sizes="45vw" unoptimized={d.image.startsWith("http")} />
                 ))}
               </div>
-              <p className="vr-copy" key={`${shown.id}-p`}>{shown.summary}</p>
-              <Link className="btn dark vr-go" href="#trips" onClick={() => setMega(null)}>{t("dest.explore")} <Arrow /></Link>
+              <p className="vr-copy" key={`${shown.id}-p`}>{t(`trip.${hover + 1}.summary`, shown.summary)}</p>
+              <button className="btn dark vr-go" type="button" onClick={(event) => openTrip(shown, event)}>{t("trips.explore")} <Arrow /></button>
             </div>
           </div>
         </div>
@@ -205,9 +215,9 @@ export default function Nav() {
                     ))
                   : TRIP_PLAN.map((d) => (
                       <li key={d.day}>
-                        <Link href={`/trips/${d.day.toLowerCase().replace(" ", "-")}`} onClick={(e) => { e.stopPropagation(); nav(e, `/trips/${d.day.toLowerCase().replace(" ", "-")}`); setOpen(false); setMobileSub(null); }}>
-                          {d.title}
-                        </Link>
+                        <button type="button" onClick={(event) => { event.stopPropagation(); openTrip(d, event); }}>
+                          {t(`tp.${TRIP_PLAN.indexOf(d) + 1}`, d.title)}
+                        </button>
                       </li>
                     ))}
               </ul>

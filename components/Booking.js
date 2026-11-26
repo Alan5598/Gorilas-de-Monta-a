@@ -15,6 +15,7 @@ export default function Booking() {
   const [mode, setMode] = useState("full");
   const [selectedPlaces, setSelectedPlaces] = useState(TRIP_PLACES);
   const [min, setMin] = useState("");
+  const [validation, setValidation] = useState("");
 
   useEffect(() => {
     const handleOpen = (event) => {
@@ -23,6 +24,7 @@ export default function Booking() {
       setMode(isPlace ? "custom" : "full");
       setSelectedPlaces(isPlace ? [place] : TRIP_PLACES);
       setStatus("idle");
+      setValidation("");
       setSentName("");
       setOpen(true);
     };
@@ -46,15 +48,20 @@ export default function Booking() {
 
   const submit = async (event) => {
     event.preventDefault();
-    if (!selectedPlaces.length) return;
-
     const form = event.currentTarget;
     const data = new FormData(form);
-    const locations = mode === "full" ? TRIP_PLACES : selectedPlaces;
-    const name = data.get("name");
-    const userEmail = data.get("email");
+    const name = String(data.get("name") || "").trim();
+    const userEmail = String(data.get("email") || "").trim();
     const travelDate = data.get("date");
-    const groupSize = data.get("groupSize");
+    const groupSize = Number(data.get("groupSize"));
+
+    if (!name || !userEmail || !/^\S+@\S+\.\S+$/.test(userEmail) || !travelDate || !Number.isFinite(groupSize) || groupSize < 1 || (mode === "custom" && !selectedPlaces.length)) {
+      setValidation(t("bk.validation"));
+      return;
+    }
+    setValidation("");
+
+    const locations = mode === "full" ? TRIP_PLACES : selectedPlaces;
     const message = data.get("message") || "Not provided";
     const packageLabel =
       mode === "full" ? "Full Rwanda Discovery Package" : "Customized Trip";
@@ -136,14 +143,14 @@ export default function Booking() {
 
         {/* ── FORM ─────────────────────────────────────────────────── */}
         {(status === "idle" || status === "sending") && (
-          <form onSubmit={submit}>
+          <form onSubmit={submit} noValidate>
             <h2 className="disp">{t("bk.title")}</h2>
             <p className="bk-sub">{t("bk.sub")}</p>
 
-            <label>{t("bk.name")}<input name="name" required autoComplete="name" autoFocus />
+            <label>{t("bk.name")}<input name="name" autoComplete="name" autoFocus />
             </label>
 
-            <label>{t("bk.email")}<input name="email" type="email" required autoComplete="email" />
+            <label>{t("bk.email")}<input name="email" type="email" autoComplete="email" />
             </label>
 
             <fieldset className="bk-packages">
@@ -196,9 +203,9 @@ export default function Booking() {
             </fieldset>
 
             <div className="bk-two">
-              <label>{t("bk.date")}<input name="date" type="date" min={min} required />
+              <label>{t("bk.date")}<input name="date" type="date" min={min} />
               </label>
-              <label>{t("bk.group")}<input name="groupSize" type="number" min="1" defaultValue="2" required />
+              <label>{t("bk.group")}<input name="groupSize" type="number" min="1" defaultValue="2" />
               </label>
             </div>
 
@@ -213,8 +220,7 @@ export default function Booking() {
               className="btn dark"
               type="submit"
               disabled={
-                status === "sending" ||
-                (mode === "custom" && !selectedPlaces.length)
+                status === "sending"
               }
             >
               {status === "sending" ? (
@@ -225,6 +231,7 @@ export default function Booking() {
                 </>
               )}
             </button>
+            {validation && <p className="bk-validation" role="alert">{validation}</p>}
           </form>
         )}
       </div>
