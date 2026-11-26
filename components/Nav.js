@@ -12,7 +12,6 @@ import { DEST, TRIP_PLAN } from "../lib/data";
 
 const LINKS = [
   ["nav.home", "#home"],
-  ["nav.about", "#about"],
   ["nav.destinations", "#destinations", "destinations"],
   ["nav.trips", "#trips", "trips"],
   ["nav.gallery", "/gallery"],
